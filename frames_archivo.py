@@ -48,28 +48,36 @@ def contar_frames(ruta = None, intensive=False):
 		import seleccionar_archivo
 		ruta = seleccionar_archivo.seleccionar_archivo("Seleccionar archivo")
 	cap = cv2.VideoCapture(ruta)
+
 	if intensive: #contamos uno por uno leyendo el archivo
 		print()
 		print("Se contara el total de frames leyendo uno por uno, esto tomara algo de tiempo")
-		contador_flags, contador_frames = leer_intensivo(cap)
-		print("total frames:", contador_frames)
+		contador_flags, length = leer_intensivo(cap)
+		print("total frames:", length)
 		print("flags:", contador_flags)
 		cap.release()
-		return contador_frames
+		#return length
 	else:
 		length = cap.get(cv2.CAP_PROP_FRAME_COUNT)
 		print("total frames:", length )
-		return length
+		#return length
+	ruta_sin_extension = ruta.split('.')[0]
+	with open(ruta_sin_extension+"_totframes.txt","w") as f:
+		f.write(str(length))
+	return length
 
 
 if __name__ == "__main__":
+
 	if len(sys.argv)==1:
-		contar_frames()
+		tot_frames = contar_frames()
 	elif len(sys.argv)==2:
-		contar_frames(sys.argv[1])
+		tot_frames = contar_frames(sys.argv[1])
 	elif len(sys.argv)==3:
-		contar_frames(sys.argv[1], bool('' if not sys.argv[2].strip().lower().startswith('intens') else 'True'))
+		tot_frames = contar_frames(sys.argv[1], bool('' if not sys.argv[2].strip().lower().startswith('intens') else 'True'))
 	else:
 		raise ValueError("Solo se debe ingresar un maximo de dos argumentos")
+
+
 	
 	#main()
