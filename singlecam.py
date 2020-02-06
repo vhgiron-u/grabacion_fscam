@@ -42,25 +42,18 @@ def main(ruta=None, conf_name = "VGA"):
     frame_width = current_config_options["frame_width"] #640
     frame_height = current_config_options["frame_height"] #480
 
-
     #para mostrar en pantalla lo que se esta grabando
-    #screen_width = 1920
     screen_width = frame_width
-    #screen_height = 1080
     screen_height = frame_height
-
 
     fps_cam = current_config_options['fps_cam']
     fps_vid = fps_cam
 
     cap_1 = cv2.VideoCapture(CAM_INDEXES[0], cv2.CAP_V4L2)
 
-
     cap_1.set(cv2.CAP_PROP_FPS, fps_cam)
-
     cap_1.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_width)
     cap_1.set(cv2.CAP_PROP_FRAME_WIDTH, frame_height)
-
 
     video_output_1 = '{}/{}_cam1.avi'.format(ruta_carpeta, nombre_carpeta)
 
@@ -78,7 +71,6 @@ def main(ruta=None, conf_name = "VGA"):
     out1 = cv2.VideoWriter(video_output_1, cv2.VideoWriter_fourcc('M','J','P','G'),fps_vid,(frame_width,frame_height),True)
 
     cont = 0
-
     #depuracion de tasa de fallos por camara
     rets = dict()
     rets[CAM_INDEXES[0]] = list()
@@ -114,6 +106,7 @@ def main(ruta=None, conf_name = "VGA"):
     t_grabacion = t1-t0
 
     frames_totales = len(rets[CAM_INDEXES[0]])
+
     logger.info("frames capturados: " + str(frames_totales))
     logger.info("tiempo de grabacion (segundos): " + str(t_grabacion))
     logger.info("fps empirico:" + str(frames_totales/t_grabacion))
