@@ -39,8 +39,8 @@ def main(ruta=None, conf_name = "VGA"):
     current_config_name = conf_name
     current_config_options = CONFIGS[current_config_name]
 
-    frame_width = current_config_options["frame_width"] #640
-    frame_height = current_config_options["frame_height"] #480
+    frame_width = current_config_options["frame_width"]
+    frame_height = current_config_options["frame_height"]
 
     #para mostrar en pantalla lo que se esta grabando
     screen_width = frame_width
