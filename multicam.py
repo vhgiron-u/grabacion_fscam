@@ -23,7 +23,9 @@ CONFIGS = {
 
 DISPLAY_CAMS = True
 
-CAM_INDEXES = [1,2]
+CAM_INDEXES = [1, 2]
+
+EXPERIMENT_TIME = 120.0 #-1
 
 
 def main(ruta=None, conf_name = "VGA"):
@@ -52,8 +54,8 @@ def main(ruta=None, conf_name = "VGA"):
 
     caps = dict()
     video_outputs = dict()
-    for ix in CAM_INDEXES:
-        vcap = cv2.VideoCapture(CAM_INDEXES[0], cv2.CAP_V4L2) #:specific_cam:
+    for i_,ix in enumerate(CAM_INDEXES):
+        vcap = cv2.VideoCapture(CAM_INDEXES[i_], cv2.CAP_V4L2) #:specific_cam:
         vcap.set(cv2.CAP_PROP_FPS, fps_cam) #:specific_cam:
         vcap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_width) #:specific_cam:
         vcap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_height) #:specific_cam:
@@ -69,6 +71,8 @@ def main(ruta=None, conf_name = "VGA"):
 
     logger.info("ruta de la carpeta que guardara el archivo:")
     logger.info(ruta_carpeta)
+    if EXPERIMENT_TIME > 0:
+        logger.info("duracion de grabacion limite: {}s".format(EXPERIMENT_TIME))
     for ix in CAM_INDEXES:
         logger.info("cap_{} al inicio del programa: ".format(ix) + str(caps[ix].get(cv2.CAP_PROP_FPS))) #:specific_cam:
 
@@ -113,11 +117,13 @@ def main(ruta=None, conf_name = "VGA"):
             for i_, ix in enumerate(CAM_INDEXES):
                 cv2.imwrite('F{}-'.format(ix)+str(cont)+'.jpg',frames[i_]) #:specific_cam:
                 cont = cont + 1
+        if time() - t0 >= EXPERIMENT_TIME:
+            break
     t1 = time()
     for ix in CAM_INDEXES:
         
         cap = caps[ix]
-        logger.info("al terminar el programa: caps[{}].CAP_PROP_FPS: {}".format(cap,cap.get(cv2.CAP_PROP_FPS)))
+        logger.info("al terminar el programa: caps[{}].CAP_PROP_FPS: {}".format(cap[ix],cap.get(cv2.CAP_PROP_FPS)))
 
     t_grabacion = t1-t0
 
