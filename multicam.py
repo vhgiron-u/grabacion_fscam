@@ -4,6 +4,7 @@ from collections import Counter
 from time import time
 import logging
 import sys
+import datetime
 from seleccionar_archivo import seleccionar_carpeta
 
 #Constantes y valores a setear
@@ -23,9 +24,9 @@ CONFIGS = {
 
 DISPLAY_CAMS = True
 
-CAM_INDEXES = [1, 2]
+CAM_INDEXES = [1]
 
-EXPERIMENT_TIME = 120.0 #-1
+EXPERIMENT_TIME = 30.0#60.0*15 #-1
 
 
 def main(ruta=None, conf_name = "VGA"):
@@ -71,8 +72,14 @@ def main(ruta=None, conf_name = "VGA"):
 
     logger.info("ruta de la carpeta que guardara el archivo:")
     logger.info(ruta_carpeta)
+    ahora = datetime.datetime.now()
+    logger.info(    "inicio del experimento:       {}"\
+                            .format(ahora.strftime("%H:%M:%S, %m/%d/%Y")))
     if EXPERIMENT_TIME > 0:
         logger.info("duracion de grabacion limite: {}s".format(EXPERIMENT_TIME))
+        tfin = ahora+datetime.timedelta(seconds=EXPERIMENT_TIME)
+        logger.info("fin estimado del experimento: {}"\
+                            .format(tfin.strftime("%H:%M:%S, %m/%d/%Y")))
     for ix in CAM_INDEXES:
         logger.info("cap_{} al inicio del programa: ".format(ix) + str(caps[ix].get(cv2.CAP_PROP_FPS))) #:specific_cam:
 
@@ -87,8 +94,8 @@ def main(ruta=None, conf_name = "VGA"):
     cam_names = {ix:"Camera{}".format(ix) for ix in CAM_INDEXES}
     for ix in CAM_INDEXES:
         rets[ix] = list() #:specific_cam:
-
-    t0 = time()
+    started = False
+    
     while True:
         # Capture frame-by-frame
         for i_, ix in enumerate(CAM_INDEXES):
@@ -101,6 +108,9 @@ def main(ruta=None, conf_name = "VGA"):
             cam_name = cam_names[ix]
             if ret==True: #:specific_cam:
                 # Display the resulting frame
+                if not started: #iniciamos registro de tiempo desde que devolvemos un frame correcto
+                    started = True
+                    t0 = time()
 
                 cv2.namedWindow(cam_name,cv2.WINDOW_NORMAL) #:specific_cam:
                 cv2.resizeWindow(cam_name, (screen_width,screen_height)) #:specific_cam:
@@ -123,7 +133,7 @@ def main(ruta=None, conf_name = "VGA"):
     for ix in CAM_INDEXES:
         
         cap = caps[ix]
-        logger.info("al terminar el programa: caps[{}].CAP_PROP_FPS: {}".format(cap[ix],cap.get(cv2.CAP_PROP_FPS)))
+        logger.info("al terminar el programa: caps[{}].CAP_PROP_FPS: {}".format(ix,cap.get(cv2.CAP_PROP_FPS)))
 
     t_grabacion = t1-t0
 
